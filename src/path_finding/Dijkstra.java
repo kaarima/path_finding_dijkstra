@@ -9,10 +9,20 @@ public class Dijkstra extends PathfindingAlgorithm {
         PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(Node::getCost));
         start.setCost(0);  // Le coût de départ est 0
         queue.add(start);
+        
+        Set<Node> visited = new HashSet<>();  // Ensemble des nœuds déjà visités
 
         while (!queue.isEmpty()) {
             Node current = queue.poll();  // On prend le nœud avec le coût le plus bas
 
+            // Vérifier si le nœud a déjà été exploré
+            if (visited.contains(current)) {
+                continue;  // Si c'est déjà exploré, on passe au suivant
+            }
+
+            visited.add(current);  // Marquer le nœud comme exploré
+
+            // Si on atteint le nœud de destination
             if (current.equals(destination)) {
                 // Si on atteint le nœud de destination, on reconstruit le chemin
                 List<Node> path = new ArrayList<>();
@@ -26,6 +36,10 @@ public class Dijkstra extends PathfindingAlgorithm {
 
             // Exploration des voisins
             for (Node neighbor : graph.getNeighbors(current)) {
+                if (visited.contains(neighbor)) {
+                    continue;  // Si le voisin a déjà été exploré, on le saute
+                }
+
                 int newCost = current.getCost() + 1;  // Le coût pour atteindre un voisin (par exemple, chaque étape coûte 1)
                 
                 // Si le nouveau coût est inférieur au coût déjà connu pour ce voisin
@@ -37,6 +51,7 @@ public class Dijkstra extends PathfindingAlgorithm {
             }
         }
 
+        // Si on sort de la boucle, cela veut dire qu'on n'a pas trouvé de chemin
         throw new PathfindingException("Aucun chemin trouvé entre les nœuds.");
     }
 }
